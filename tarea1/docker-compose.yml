@@ -1,7 +1,7 @@
 version: "3.7"
 
 services:
-  ###################-CLIENTE-#########################
+  #################-CLIENTE-#########################
   client:
     container_name: cliente-http
     build: ./Client
@@ -27,7 +27,7 @@ services:
       - ./Database/db/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - POSTGRESQL_USERNAME=root
-      - POSTGRESQL_DB=root
+      - POSTGRESQL_DATABASE=root
       - "ALLOW_EMPTY_PASSWORD=yes"
     ports:
       - "5432:5432"
@@ -85,14 +85,14 @@ services:
       ]
 
     ###################-PG_ADMIN-##########################
-  pgadmin:
-    image: "dpage/pgadmin4"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
-      PGADMIN_DEFAULT_PASSWORD: "admin"
-    ports:
-      - "80:80"
-    depends_on:
-      - postgres
-    logging:
-      driver: "none"
+  #pgadmin:
+  #  image: "dpage/pgadmin4"
+  #  environment:
+  #    PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
+  #    PGADMIN_DEFAULT_PASSWORD: "admin"
+  #  ports:
+  #    - "80:80"
+  #  depends_on:
+  #    - postgres
+  #  logging:
+  #    driver: none
