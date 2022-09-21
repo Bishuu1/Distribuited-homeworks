@@ -19,20 +19,21 @@ const server = new grpc.Server();
 server.addService(a.WebsiteSearch.service, {
   GetServerResponse: (call, callback) => {
     const id = call.request.message;
-
+    console.log("aber");
     client.connect((err, client, release) => {
       if (err) {
         return console.error("Error acquiring client", err.stack);
       }
+      console.log("Client connected");
       client.query(
-        'SELECT * FROM public."Users" WHERE id = $1',
+        "SELECT * FROM public.dburl WHERE id = $1",
         [id],
-        (error, results) => {
+        (error, result) => {
           release();
           if (error) {
             throw error;
           }
-          response.status(200).json(results.rows);
+          callback(null, { product: result.rows });
         }
       );
     });
