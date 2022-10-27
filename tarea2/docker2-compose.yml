@@ -1,26 +1,6 @@
 version: "3.7"
 
 services:
-  node-api:
-    container_name: api-login
-    build: ./server/api
-    depends_on:
-      - node-api-blocked
-    # volumes:
-    #    - './server/api:/usr/src/app'
-    ports:
-      - "3000:3000"
-
-  node-api-blocked:
-    container_name: api-blocked
-    build: ./server/error
-
-    # volumes:
-    #   - ./server/error:/usr/src/app
-
-    ports:
-      - "8000:8000"
-
   #################-POSTGRES-##########################
   postgres:
     image: docker.io/bitnami/postgresql:latest
@@ -32,8 +12,6 @@ services:
       - "ALLOW_EMPTY_PASSWORD=yes"
     ports:
       - "5432:5432"
-    logging:
-      driver: none
   ###################-PG_ADMIN-##########################
   pgadmin:
     image: "dpage/pgadmin4"
@@ -56,8 +34,7 @@ services:
       - ALLOW_ANONYMOUS_LOGIN=yes
     volumes:
       - ./bitnami/zookeeper:/bitnami/zookeeper
-    logging:
-      driver: none
+
   ###################-kafka-##########################
   kafka:
     image: "bitnami/kafka:latest"
@@ -85,13 +62,14 @@ services:
     command: |
       "
       # blocks until kafka is reachable
-      kafka-topics.sh --bootstrap-server kafka:29092 --list
+      kafka-topics --bootstrap-server kafka:29092 --list
 
       echo -e 'Creating kafka topics'
-      kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic members --replication-factor 1 --partitions 2
-      kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic sales --replication-factor 1 --partitions 2
-      kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic stock --replication-factor 1 --partitions 2
-      kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic locations --replication-factor 1 --partitions 2
-      echo -e 'Successfully created the following topics:'
-      kafka-topics.sh --bootstrap-server kafka:29092 --list
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic my-topic-1 --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic my-topic-2 --replication-factor 1 --partitions 1
       "
+
+#--create --if-not-exists --topic Stock --replication-factor 1 --partitions 1
+#        --create --if-not-exists --topic Coordenadas --replication-factor 1 --partitions 1
+#        --create --if-not-exists --topic NewMembers --replication-factor 1 --partitions 1
+#        --list
