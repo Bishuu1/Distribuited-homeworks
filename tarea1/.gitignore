@@ -1,9 +1,4 @@
 node_modules
 src
 Dockerfile
-<<<<<<< HEAD
 user-ct-test-collection-02.txt
-=======
-user-ct-test-collection-02.txt
-Database
->>>>>>> 4ac790235b6dec72e85935908d3a863664af8831
