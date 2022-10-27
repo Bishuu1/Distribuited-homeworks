@@ -1,0 +1,75 @@
+version: "3.7"
+
+services:
+  #################-POSTGRES-##########################
+  postgres:
+    image: docker.io/bitnami/postgresql:latest
+    volumes:
+      - ./Database/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRESQL_USERNAME=root
+      - POSTGRESQL_DATABASE=root
+      - "ALLOW_EMPTY_PASSWORD=yes"
+    ports:
+      - "5432:5432"
+  ###################-PG_ADMIN-##########################
+  pgadmin:
+    image: "dpage/pgadmin4"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+    ports:
+      - "80:80"
+    depends_on:
+      - postgres
+    logging:
+      driver: none
+
+  ###################-zookeeper-##########################
+  zookeeper:
+    image: "bitnami/zookeeper:latest"
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    volumes:
+      - ./bitnami/zookeeper:/bitnami/zookeeper
+
+  ###################-kafka-##########################
+  kafka:
+    image: "bitnami/kafka:latest"
+    ports:
+      - "9093:9093"
+    expose:
+      - "29092"
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CREATE_TOPICS="kafka_capstone_event_bus:1:1"
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:29092,EXTERNAL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:29092,EXTERNAL://localhost:9093
+      - KAFKA_INTER_BROKER_LISTENER_NAME=CLIENT
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+  ###################-init-kafka-##########################
+  init-kafka:
+    image: "bitnami/kafka:latest"
+    depends_on:
+      - kafka
+    entrypoint: ["/bin/sh", "-c"]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server kafka:29092 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic my-topic-1 --replication-factor 1 --partitions 1
+      kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic my-topic-2 --replication-factor 1 --partitions 1
+      "
+
+#--create --if-not-exists --topic Stock --replication-factor 1 --partitions 1
+#        --create --if-not-exists --topic Coordenadas --replication-factor 1 --partitions 1
+#        --create --if-not-exists --topic NewMembers --replication-factor 1 --partitions 1
+#        --list

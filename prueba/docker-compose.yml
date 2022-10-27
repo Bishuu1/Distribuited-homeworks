@@ -1,11 +1,10 @@
+###############-VERSION-###################
 version: "3.7"
 
+################-SERVICIOS-################
+
 services:
-<<<<<<< HEAD
   ###################-CLIENTE-#########################
-=======
-  #################-CLIENTE-#########################
->>>>>>> 4ac790235b6dec72e85935908d3a863664af8831
   client:
     container_name: cliente-http
     build: ./Client
@@ -13,9 +12,10 @@ services:
       - grpc_server
       - redis1
       - redis2
-      - redis3
+      - redis
     ports:
       - "3000:3000"
+
   ###################-SERVIDOR-#########################
   grpc_server:
     container_name: servidor-grpc
@@ -24,19 +24,17 @@ services:
       - postgres
     ports:
       - "8030:8030"
+
   #################-POSTGRES-##########################
   postgres:
-    image: docker.io/bitnami/postgresql:latest
+    image: docker.io/bitnami/postgresql:11
     volumes:
       - ./Database/db/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
-      - POSTGRESQL_USERNAME=root
-<<<<<<< HEAD
-      - POSTGRESQL_DB=root
-=======
-      - POSTGRESQL_DATABASE=root
->>>>>>> 4ac790235b6dec72e85935908d3a863664af8831
-      - "ALLOW_EMPTY_PASSWORD=yes"
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_DATABASE=tiendita
+      - ALLOW_EMPTY_PASSWORD=yes
+      - POSTGRESQL_PASSWORD=postgres
     ports:
       - "5432:5432"
 
@@ -91,20 +89,3 @@ services:
         "--maxmemory 2mb",
         "--maxmemory-policy allkeys-random",
       ]
-
-    ###################-PG_ADMIN-##########################
-  pgadmin:
-    image: "dpage/pgadmin4"
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "admin@admin.com"
-      PGADMIN_DEFAULT_PASSWORD: "admin"
-    ports:
-      - "80:80"
-    depends_on:
-      - postgres
-    logging:
-<<<<<<< HEAD
-      driver: "none"
-=======
-      driver: none
->>>>>>> 4ac790235b6dec72e85935908d3a863664af8831

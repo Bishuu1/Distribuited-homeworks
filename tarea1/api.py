@@ -109,7 +109,11 @@ for line in lines:
             
     nsites += 1
     
+<<<<<<< HEAD
     if nsites >= 50 :
+=======
+    if nsites >= 20:
+>>>>>>> 4ac790235b6dec72e85935908d3a863664af8831
         break
 conexion.commit()
 conexion.close()

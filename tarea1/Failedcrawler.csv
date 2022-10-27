@@ -10,6 +10,7 @@
 <class 'NameError'>,http://www.motorcitydecals.com
 <class 'NameError'>,http://www.wtmx.com
 <class 'NameError'>,http://www.wdrv.com
+<<<<<<< HEAD
 <class 'NameError'>,http://www.djheadlines.com
 <class 'NameError'>,http://www.imdb.com
 <class 'NameError'>,http://plato.stanford.edu
@@ -29,3 +30,5 @@
 <class 'NameError'>,http://www.econ.iastate.edu
 <class 'NameError'>,http://cyberjournal.org
 <class 'NameError'>,http://depts.washington.edu
+=======
+>>>>>>> 4ac790235b6dec72e85935908d3a863664af8831

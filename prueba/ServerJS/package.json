@@ -5,22 +5,14 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-<<<<<<< HEAD
-    "server": "node server.js"
-=======
-    "server": "nodemon server.js"
->>>>>>> 4ac790235b6dec72e85935908d3a863664af8831
+    "server":"node server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@grpc/grpc-js": "^1.7.0",
+    "@grpc/grpc-js": "^1.6.7",
     "@grpc/proto-loader": "^0.6.9",
     "install": "^0.13.0",
-<<<<<<< HEAD
-=======
-    "nodemon": "^2.0.20",
->>>>>>> 4ac790235b6dec72e85935908d3a863664af8831
     "npm": "^8.7.0",
     "pg": "^8.7.3"
   }
