@@ -1,11 +1,7 @@
 version: "3.7"
 
 services:
-<<<<<<< HEAD
   ###################-CLIENTE-#########################
-=======
-  #################-CLIENTE-#########################
->>>>>>> 4ac790235b6dec72e85935908d3a863664af8831
   client:
     container_name: cliente-http
     build: ./Client
@@ -31,11 +27,7 @@ services:
       - ./Database/db/init.sql:/docker-entrypoint-initdb.d/init.sql
     environment:
       - POSTGRESQL_USERNAME=root
-<<<<<<< HEAD
       - POSTGRESQL_DB=root
-=======
-      - POSTGRESQL_DATABASE=root
->>>>>>> 4ac790235b6dec72e85935908d3a863664af8831
       - "ALLOW_EMPTY_PASSWORD=yes"
     ports:
       - "5432:5432"
@@ -103,8 +95,4 @@ services:
     depends_on:
       - postgres
     logging:
-<<<<<<< HEAD
       driver: "none"
-=======
-      driver: none
->>>>>>> 4ac790235b6dec72e85935908d3a863664af8831
