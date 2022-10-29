@@ -1,35 +1,67 @@
 //basic api with kafka
 const express = require("express");
-const kafka = require("kafka-node");
+const { Kafka } = require("kafkajs");
 const app = express();
 const port = 3000;
-const client = new kafka.KafkaClient({ kafkaHost: "localhost:9092" });
-
-var Producer = kafka.Producer(client);
+const kafka = new Kafka({
+  clientId: "my-app",
+  brokers: ["localhost:9092"],
+});
 
 app.post("/submit", (req, res) => {
-  Producer.on("ready", function () {
+  console.log("submit");
+  (async () => {
+    const producer = kafka.producer();
+    await producer.connect();
     if (req.body.premium == true) {
-      var payloads = [{ topic: "members", messages: req.body, partition: 1 }];
+      await producer.send({
+        topic: "members",
+        messages: req.body,
+        partition: 1,
+      });
     } else {
-      var payloads = [{ topic: "members", messages: req.body, partition: 0 }];
+      await producer.send({
+        topic: "members",
+        messages: req.body,
+        partition: 0,
+      });
     }
-    Producer.send(payloads, function (err) {
-      if (err) {
-        console.log(err);
-      }
-    });
-  });
+    await producer.disconnect();
+  })();
 });
 
 //post request basic to send data to kafka
+//post ventas should send sales and clients to topic=sales, location should be sent to topic=location and stock should be sent to topic=stock.
 app.post("/ventas", (req, res) => {
-  Producer.on("ready", function () {
-    var payloads = [{ topic: "sales", messages: req.body, partition: 0 }];
-    Producer.send(payloads, function (err) {
-      console.log(err);
+  console.log("submit");
+  (async () => {
+    const producer = kafka.producer();
+    await producer.connect();
+    const { name, sales, clients, time, stock, location } = req.body;
+    let sale = {
+      name: name,
+      sales: sales,
+      clients: clients,
+    };
+    await producer.send({
+      topic: "sales",
+      messages: [{ value: JSON.stringify(sale) }],
+      partition: 1,
     });
-  });
+
+    await producer.send({
+      topic: "location",
+      messages: location,
+      partition: 1,
+    });
+    await producer.send({
+      topic: "stock",
+      messages: stock,
+      partition: 1,
+    });
+
+    await producer.disconnect();
+  })();
 });
 
 app.listen(port, () => {

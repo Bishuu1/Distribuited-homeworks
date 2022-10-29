@@ -1,19 +1,17 @@
-const pg = require("pg");
-var kafka = require("kafka-node"),
-  Consumer = kafka.Consumer,
-  client = new kafka.KafkaClient(),
-  consumer = new Consumer(
-    client,
-    [
-      { topic: "t", partition: 0 },
-      { topic: "t1", partition: 1 },
-    ],
-    {
-      autoCommit: false,
-    }
-  );
-const client = new kafka.KafkaClient({ kafkaHost: "localhost:9092" });
-const consumer = kafka.consumer(client, { groupId: "members-group" });
+const { Pool, Client } = require("pg");
+
+//kafka Consumer
+const { Kafka } = require("kafkajs");
+
+const kafka = new Kafka({
+  clientId: "my-app",
+  brokers: ["localhost:9092"],
+});
+const consumer = kafka.consumer({ groupId: "my-group" });
+
+var client = new kafka.KafkaClient({ kafkaHost: "localhost:9092" });
+
+//Postgres Credentials//
 const credentials = {
   user: "root",
   host: "localhost",
@@ -22,6 +20,16 @@ const credentials = {
   port: 5432,
 };
 
+//Postgres Credentials
+const pool = new Pool({
+  user: "root",
+  host: "localhost",
+  database: "root",
+  password: "",
+  port: 5432,
+});
+
+//Register function
 async function registerMember(member) {
   const text = `
     INSERT INTO members (name, lastname, rut, email, patent, premium)
@@ -36,15 +44,19 @@ async function registerMember(member) {
     member.patent,
     member.premium,
   ];
-  return pool.query(text, values);
+  console.log("starting async query");
+  const result = await pool.query(text, values);
+  return result;
 }
 
+//Consumer consuming
 await consumer.connect();
 await consumer.subscribe({ topic: "members", fromBeginning: true });
 
 await consumer.run({
   eachMessage: async ({ topic, partition, message }) => {
     if (partition == 1) {
+      registerMember(message);
     }
     console.log({
       value: message.value.toString(),
