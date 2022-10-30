@@ -56,12 +56,14 @@ services:
     expose:
       - "29092"
     environment:
+      - KAFKA_BROKER_ID:1
+      - KAFKA_ADVERTISED_HOST_NAME:kafka
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
       - KAFKA_CREATE_TOPICS="kafka_capstone_event_bus:1:1"
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
-      - KAFKA_CFG_LISTENERS=CLIENT://:29092,EXTERNAL://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:29092,EXTERNAL://localhost:9092
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092 #,EXTERNAL://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092 #,EXTERNAL://localhost:9092
       - KAFKA_INTER_BROKER_LISTENER_NAME=CLIENT
       - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
@@ -77,13 +79,13 @@ services:
     command: |
       "
       # blocks until kafka is reachable
-      kafka-topics.sh --bootstrap-server kafka:29092 --list
+      # kafka-topics.sh --bootstrap-server kafka:9092 --list
 
-      echo -e 'Creating kafka topics'
-      kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic members --replication-factor 1 --partitions 2
-      kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic sales --replication-factor 1 --partitions 2
-      kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic stock --replication-factor 1 --partitions 2
-      kafka-topics.sh --bootstrap-server kafka:29092 --create --if-not-exists --topic locations --replication-factor 1 --partitions 2
-      echo -e 'Successfully created the following topics:'
-      kafka-topics.sh --bootstrap-server kafka:29092 --list
+      # echo -e 'Creating kafka topics'
+      # kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic members --replication-factor 1 --partitions 2
+      # kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic sales --replication-factor 1 --partitions 2
+      # kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic stock --replication-factor 1 --partitions 2
+      # kafka-topics.sh --bootstrap-server kafka:9092 --create --if-not-exists --topic locations --replication-factor 1 --partitions 2
+      # echo -e 'Successfully created the following topics:'
+      # kafka-topics.sh --bootstrap-server kafka:9092 --list
       "
