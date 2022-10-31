@@ -31,6 +31,13 @@ const consumer = kafka.consumer({ groupId: "membersGroup" });
 
 var value = null;
 
+function writeToFile(data, texto) {
+  fs.appendFile(texto, data, (err) => {
+    if (err) throw err;
+    console.log("The " + data + " was appended to file!");
+  });
+}
+
 const main = async () => {
   console.log("Entra main");
   await consumer.connect();
@@ -41,10 +48,15 @@ const main = async () => {
     .run({
       eachMessage: async ({ topic, partition, message }) => {
         value = message.value;
+
+        if (partition == 1) {
+          writeToFile(message.value.toString(), "registers.txt");
+        } else {
+          writeToFile(message.value.toString(), "escapees.txt");
+        }
         console.log({
           value: message.value.toString(),
         });
-        json = JSON.parse(value);
       },
     })
     .catch(console.error);

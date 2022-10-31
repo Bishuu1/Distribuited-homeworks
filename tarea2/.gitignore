@@ -1,2 +1,5 @@
 bitnami
 producer/node_modules
+consumerLocation/node_modules
+consumerMembers/node_modules
+consumerSales/node_modules

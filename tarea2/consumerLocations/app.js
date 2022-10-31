@@ -54,7 +54,6 @@ const main = async () => {
   await consumer.connect();
   await consumer.subscribe({ topic: "location", fromBeginning: true });
   console.log("location");
-  var time = Math.floor(new Date() / 1000);
 
   await consumer
     .run({
@@ -73,8 +72,8 @@ const main = async () => {
 async function updateCoordinates(coordinates) {
   const text = `
     UPDATE location
-    SET x=$1, y=$2 
-    WHERE id=$3
+    SET patente=$1, x=$2, y=$3
+    WHERE id=$4
   `;
 
   const values = [
@@ -98,6 +97,8 @@ await consumer.run({
   eachMessage: async ({ topic, partition, message }) => {
     if (partition == 1) {
       updateCoordinates(message);
+    } else {
+      console.log("No se ha podido actualizar la ubicación");
     }
     console.log({
       value: message.value.toString(),
