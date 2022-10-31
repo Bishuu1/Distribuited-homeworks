@@ -1,65 +1,62 @@
-const { Pool, Client } = require("pg");
-
-//kafka Consumer
+"use strict";
+/* IMPORTS */
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const bodyParser = require("body-parser");
 const { Kafka } = require("kafkajs");
 
-const kafka = new Kafka({
-  clientId: "my-app",
-  brokers: ["localhost:9092"],
+//-------------------------------------------
+
+/* CONFIGS */
+//server.server();
+const app = express();
+dotenv.config();
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+app.use(bodyParser.json());
+app.use(cors());
+
+var port = process.env.PORT || 8000;
+var host = process.env.PORT || "0.0.0.0";
+
+var kafka = new Kafka({
+  clientId: "memberapp",
+  brokers: ["kakfa:9092"],
 });
-const consumer = kafka.consumer({ groupId: "my-group" });
+const consumer = kafka.consumer({ groupId: "membersGroup" });
 
-var client = new kafka.KafkaClient({ kafkaHost: "localhost:9092" });
+var value = null;
 
-//Postgres Credentials//
-const credentials = {
-  user: "root",
-  host: "localhost",
-  database: "root",
-  password: "",
-  port: 5432,
+const main = async () => {
+  console.log("Entra main");
+  await consumer.connect();
+  await consumer.subscribe({ topic: "members", fromBeginning: true });
+  console.log("members");
+
+  await consumer
+    .run({
+      eachMessage: async ({ topic, partition, message }) => {
+        value = message.value;
+        console.log({
+          value: message.value.toString(),
+        });
+        json = JSON.parse(value);
+      },
+    })
+    .catch(console.error);
 };
 
-//Postgres Credentials
-const pool = new Pool({
-  user: "root",
-  host: "localhost",
-  database: "root",
-  password: "",
-  port: 5432,
+/* PORTS */
+
+app.get("/members", (req, res) => {
+  res.send("hola");
 });
 
-//Register function
-async function registerMember(member) {
-  const text = `
-    INSERT INTO members (name, lastname, rut, email, patent, premium)
-    VALUES ($1, $2, $3, $4, $5, $6)
-    RETURNING id
-  `;
-  const values = [
-    member.name,
-    member.lastname,
-    member.rut,
-    member.email,
-    member.patent,
-    member.premium,
-  ];
-  console.log("starting async query");
-  const result = await pool.query(text, values);
-  return result;
-}
-
-//Consumer consuming
-await consumer.connect();
-await consumer.subscribe({ topic: "members", fromBeginning: true });
-
-await consumer.run({
-  eachMessage: async ({ topic, partition, message }) => {
-    if (partition == 1) {
-      registerMember(message);
-    }
-    console.log({
-      value: message.value.toString(),
-    });
-  },
+app.listen(port, host, () => {
+  console.log(`API-Blocked run in: http://localhost:${port}.`);
+  main();
 });

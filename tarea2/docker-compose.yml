@@ -11,6 +11,17 @@ services:
       - kafka
     ports:
       - "3000:3000"
+
+  #################-Consumer-#########################
+  members:
+    container_name: members-consumer
+    build:
+      context: ./consumerMembers/
+      dockerfile: Dockerfile
+    depends_on:
+      - kafka
+    ports:
+      - "8000:8000"
   #################-POSTGRES-##########################
   postgres:
     image: docker.io/bitnami/postgresql:latest
@@ -50,24 +61,17 @@ services:
       driver: none
   ###################-kafka-##########################
   kafka:
+    container_name: elkafka
     image: "bitnami/kafka:latest"
-    ports:
-      - "9092:9092"
-    expose:
-      - "29092"
-    environment:
-      - KAFKA_BROKER_ID:1
-      - KAFKA_ADVERTISED_HOST_NAME:kafka
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_CREATE_TOPICS="kafka_capstone_event_bus:1:1"
-      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
-      - KAFKA_CFG_LISTENERS=CLIENT://:9092 #,EXTERNAL://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092 #,EXTERNAL://localhost:9092
-      - KAFKA_INTER_BROKER_LISTENER_NAME=CLIENT
-      - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
       - zookeeper
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: "kafka"
+      KAFKA_ADVERTISED_PORT: "9092"
+      KAFKA_CFG_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+    ports:
+      - "9092:9092"
     logging:
       driver: none
   ###################-init-kafka-##########################

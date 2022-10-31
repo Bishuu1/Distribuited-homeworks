@@ -1,22 +1,34 @@
+"use strict";
+/* IMPORTS */
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const bodyParser = require("body-parser");
+const { Kafka } = require("kafkajs");
+
 const { Pool, Client } = require("pg");
+const app = express();
+dotenv.config();
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
+app.use(bodyParser.json());
+app.use(cors());
+
+var port = process.env.PORT || 8001;
+var host = process.env.PORT || "0.0.0.0";
 
 //kafka Consumer
-var kafka = require("kafka-node");
-var Consumer = kafka.Consumer;
-var client = new kafka.KafkaClient({ kafkaHost: "localhost:9092" });
-var consumer = new Consumer(
-  client,
-  {
-    groupId: "location-group",
-  },
-  [
-    { topic: "location", partition: 0 },
-    { topic: "location", partition: 1 },
-  ],
-  {
-    autoCommit: false,
-  }
-);
+var kafka = new Kafka({
+  clientId: "memberapp",
+  brokers: ["kakfa:9092"],
+});
+
+const consumer = kafka.consumer({ groupId: "locationGroup" });
+
+var value = null;
 
 //Postgres Credentials//
 const credentials = {
@@ -37,6 +49,27 @@ const pool = new Pool({
 });
 
 //Register function
+const main = async () => {
+  console.log("Entra main");
+  await consumer.connect();
+  await consumer.subscribe({ topic: "location", fromBeginning: true });
+  console.log("location");
+  var time = Math.floor(new Date() / 1000);
+
+  await consumer
+    .run({
+      eachMessage: async ({ topic, partition, message }) => {
+        value = message.value;
+        console.log({
+          value: message.value.toString(),
+        });
+        json = JSON.parse(value);
+        updateCoordinates(json);
+      },
+    })
+    .catch(console.error);
+};
+
 async function updateCoordinates(coordinates) {
   const text = `
     UPDATE location
@@ -44,7 +77,11 @@ async function updateCoordinates(coordinates) {
     WHERE id=$3
   `;
 
-  const values = [coordinates.x, coordinates.y, coordinates.id];
+  const values = [
+    JSON.stringify(coordinates.x),
+    JSON.stringify(coordinates.y),
+    JSON.stringify(coordinates.id),
+  ];
 
   console.log("starting async query");
 
