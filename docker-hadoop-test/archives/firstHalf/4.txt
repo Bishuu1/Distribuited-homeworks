@@ -1,0 +1,78 @@
+Cassandra   is a free and open-source, distributed, wide-column store, NoSQL database management system designed to handle large amounts of data across many commodity servers, providing high availability with no single point of failure. Cassandra offers support for clusters spanning multiple datacenters, with asynchronous masterless replication allowing low latency operations for all clients. Cassandra was designed to implement a combination of Amazon's Dynamo distributed storage and replication techniques combined with Google's Bigtable data and storage engine model.
+
+History
+Avinash Lakshman, one of the authors of Amazon's Dynamo, and Prashant Malik initially developed  Cassandra at Facebook to power the Facebook inbox search feature.  Facebook released Cassandra as an open-source project on Google code in July 2008.  In March 2009, it became an Apache Incubator project. On February 17, 2010, it graduated to a top-level project.Facebook developers named their database after the Trojan mythological prophet Cassandra, with classical allusions to a curse on an oracle.
+
+Releases
+Releases after graduation include
+
+0.6, released Apr 12 2010, added support for integrated caching, and Apache Hadoop MapReduce
+0.7, released Jan 08 2011, added secondary indexes and online schema changes
+0.8, released Jun 2 2011, added the Cassandra Query Language (CQL), self-tuning memtables, and support for zero-downtime upgrades
+1.0, released Oct 17 2011, added integrated compression, leveled compaction, and improved read-performance
+1.1, released Apr 23 2012, added self-tuning caches, row-level isolation, and support for mixed ssd/spinning disk deployments
+1.2, released Jan 2 2013, added clustering across virtual nodes, inter-node communication, atomic batches, and request tracing
+2.0, released Sep 4 2013, added lightweight transactions (based on the Paxos consensus protocol), triggers, improved compactions
+2.1 released Sep 10 2014
+2.2 released July 20, 2015
+3.0 released November 11, 2015
+3.1 through 3.10 releases were monthly releases using a tick-tock-like release model, with even-numbered releases providing both new features and bug fixes while odd-numbered releases will include bug fixes only.
+3.11 released June 23, 2017 as a stable 3.11 release series and bug fix from the last tick-tock feature release.
+4.0 released July 26, 2021.
+4.0.1 released September 7, 2021.
+4.0.2 released February 8, 2022.
+4.0.3 released February 17, 2022.
+4.0.4 released May 13, 2022.
+4.0.5 released July 18, 2022.
+4.0.6 released August 25, 2022.
+4.0.7 released October 23, 2022.
+
+Main features
+Distributed
+Every node in the cluster has the same role. There is no single point of failure.  Data is distributed across the cluster (so each node contains different data), but there is no master as every node can service any request.Supports replication and multi data center replication
+Replication strategies are configurable. Cassandra is designed as a distributed system, for deployment of large numbers of nodes across multiple data centers. Key features of Cassandra’s distributed architecture are specifically tailored for multiple-data center deployment, for redundancy,  for failover and disaster recovery.Scalability
+Designed to have read and write throughput both increase linearly as new machines are added, with the aim of no downtime or interruption to applications.Fault-tolerant
+Data is automatically replicated to multiple nodes for fault-tolerance. Replication across multiple data centers is supported. Failed nodes can be replaced with no downtime.Tunable consistency
+Cassandra is typically classified as an AP system, meaning that availability and partition tolerance are generally considered to be more important than consistency in Cassandra, Writes and reads offer a tunable level of consistency, all the way from "writes never fail" to "block for all replicas to be readable", with the quorum level in the middle.MapReduce support
+Cassandra has Hadoop integration, with MapReduce support. There is support also  for Apache Pig and Apache Hive.Query language
+Cassandra introduced the Cassandra Query Language (CQL). CQL is a simple interface for accessing Cassandra, as an alternative to the traditional Structured Query Language (SQL).Eventual consistency
+Cassandra manages eventual consistency of reads, upserts and deletes through Tombstones.
+
+Cassandra Query Language
+Cassandra introduced the Cassandra Query Language (CQL). CQL is a simple interface for accessing Cassandra, as an alternative to the traditional Structured Query Language (SQL). CQL adds an abstraction layer that hides implementation details of this structure and provides native syntaxes for collections and other common encodings. Language drivers are available for Java (JDBC), Python (DBAPI2), Node.JS (Datastax), Go (gocql) and C++.The keyspace in Cassandra is a namespace that defines data replication across nodes. Therefore, replication is defined at the keyspace level. Below an example of keyspace creation, including a column family in CQL 3.0:
+
+Which gives:
+
+Known issues
+Up to Cassandra 1.0, Cassandra was not row level consistent, meaning that inserts and updates into the table that affect the same row that are processed at approximately the same time may affect the non-key columns in inconsistent ways. One update may affect one column while another affects the other, resulting in sets of values within the row that were never specified or intended. Cassandra 1.1 solved this issue by introducing row-level isolation.Cassandra is not supported on Windows as of version 4, see issue CASSANDRA-16171.
+
+Tombstones
+Deletion markers called "Tombstones" are known to cause severe performance degradation.
+
+Data model
+Cassandra is wide column store, and, as such, essentially a hybrid between a key-value and a tabular database management system. Its data model is a partitioned row store with tunable consistency. Rows are organized into tables; the first component of a table's primary key is the partition key; within a partition, rows are clustered by the remaining columns of the key. Other columns may be indexed separately from the primary key.Tables may be created, dropped, and altered at run-time without blocking updates and queries.Cassandra cannot do joins or subqueries.  Rather, Cassandra emphasizes denormalization through features like collections.A column family (called "table" since CQL 3) resembles a table in an RDBMS (Relational Database Management System). Column families contain rows and columns. Each row is uniquely identified by a row key. Each row has multiple columns, each of which has a name, value, and a timestamp. Unlike a table in an RDBMS, different rows in the same column family do not have to share the same set of columns, and a column may be added to one or multiple rows at any time.Each key in Cassandra corresponds to a value which is an object. Each key has values as columns, and columns are grouped together into sets called column families. Thus, each key identifies a row of a variable number of elements. These column families could be considered then as tables.  A table in Cassandra is a distributed multi dimensional map indexed by a key. Furthermore, applications can specify the sort order of columns within a Super Column or Simple Column family.
+
+Management and monitoring
+Cassandra is a Java-based system that can be managed and monitored via Java Management Extensions (JMX). The JMX-compliant nodetool utility, for instance, can be used to manage a Cassandra cluster (adding nodes to a ring, draining nodes, decommissioning nodes, and so on). Nodetool also offers a number of commands to return Cassandra metrics pertaining to disk usage, latency, compaction, garbage collection, and more.Since Cassandra 2.0.2 in 2013, measures of several metrics are produced via the Dropwizard metrics framework, and may be queried via JMX using tools such as JConsole or passed to external monitoring systems via Dropwizard-compatible reporter plugins.
+
+See also
+Bigtable - Original distributed database by Google
+Distributed database
+Distributed hash table (DHT)
+Dynamo (storage system) - Cassandra borrows many elements from Dynamo
+Scylla - a distributed data store written in C++ that's API-compatible with Cassandra
+
+References
+Bibliography
+External links
+
+Lakshman, Avinash (2008-08-25). "Cassandra - A structured storage system on a P2P Network". Engineering @ Facebook's Notes. Retrieved 2014-06-17.
+"The Apache Cassandra Project". Forest Hill, MD, USA: The Apache Software Foundation. Retrieved 2014-06-17.
+"Project Wiki". Forest Hill, MD, USA: The Apache Software Foundation. Archived from the original on 2014-06-14. Retrieved 2014-06-17.
+Hewitt, Eben (2010-12-01). "Adopting Apache Cassandra". infoq.com. InfoQ, C4Media Inc. Retrieved 2014-06-17.
+Lakshman, Avinash; Malik, Prashant (2009-08-15). "Cassandra - A Decentralized Structured Storage System" (PDF). cs.cornell.edu. The authors are from Facebook. Retrieved 2014-06-17.
+Ellis, Jonathan (2009-07-29). "What Every Developer Should Know About Database Scalability". slideshare.net. Retrieved 2014-06-17. From the OSCON 2009 talk on RDBMS vs. Dynamo, Bigtable, and Cassandra.
+"Cassandra-RPM - Red Hat Package Manager (RPM) build for the Apache Cassandra project". code.google.com. Menlo Park, CA, USA: Google Project Hosting. Retrieved 2014-06-17.
+Roth, Gregor (2012-10-14). "Cassandra by example - the path of read and write requests". slideshare.net. Retrieved 2014-06-17.
+Mansoor, Umer (2012-11-04). "A collection of Cassandra tutorials". Retrieved 2015-02-08.
+Bushik, Sergey (2012-10-22). "A vendor-independent comparison of NoSQL databases: Cassandra, HBase, MongoDB, Riak". NetworkWorld. Framingham, MA, USA and Staines, Middlesex, UK: IDG. Archived from the original on 2014-05-28. Retrieved 2014-06-17.
